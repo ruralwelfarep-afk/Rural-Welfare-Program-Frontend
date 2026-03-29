@@ -1338,7 +1338,7 @@ export default function ApplyFormPage() {
               <div className="mb-6">
                 <p className="text-xs font-bold text-[#1a5c2a] uppercase tracking-wider mb-3">Optional Documents</p>
                 <div className="grid sm:grid-cols-2 gap-5">
-                  <FileUpload label="Additional Qualification Certificate" name="qualificationDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required={false} onChange={handleFileChange} hint="Any other degree or diploma" />
+                 {/* <FileUpload label="Additional Qualification Certificate" name="qualificationDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required={false} onChange={handleFileChange} hint="Any other degree or diploma" /> */}
                   <FileUpload label="Additional Document"                  name="additionalDoc"    accept="image/jpeg,image/png,image/jpg,application/pdf" required={false} onChange={handleFileChange} hint="Any other supporting document" />
                 </div>
               </div>
