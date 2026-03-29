@@ -845,8 +845,8 @@ function Toast({ message, type = 'error', onClose }) {
   const bg = type === 'error'
     ? 'bg-red-50 border-red-200 text-red-800'
     : type === 'success'
-    ? 'bg-green-50 border-green-200 text-green-800'
-    : 'bg-yellow-50 border-yellow-200 text-yellow-800'
+      ? 'bg-green-50 border-green-200 text-green-800'
+      : 'bg-yellow-50 border-yellow-200 text-yellow-800'
   return (
     <div className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-start gap-3 px-4 py-3 rounded-2xl border shadow-lg max-w-sm w-[90vw] ${bg}`}>
       <span className="text-base mt-0.5">{type === 'error' ? '⚠️' : type === 'success' ? '✅' : 'ℹ️'}</span>
@@ -858,7 +858,7 @@ function Toast({ message, type = 'error', onClose }) {
 
 function useToast() {
   const [toasts, setToasts] = useState([])
-  const show   = useCallback((message, type = 'error') => setToasts(p => [...p, { id: Date.now(), message, type }]), [])
+  const show = useCallback((message, type = 'error') => setToasts(p => [...p, { id: Date.now(), message, type }]), [])
   const remove = useCallback((id) => setToasts(p => p.filter(t => t.id !== id)), [])
   const ToastContainer = (
     <div className="fixed top-0 left-0 right-0 z-50 flex flex-col items-center gap-2 pt-4 pointer-events-none">
@@ -875,7 +875,7 @@ function useToast() {
 // ─── File Upload Field ─────────────────────────────────────────────────────────
 function FileUpload({ label, name, accept, required, onChange, hint }) {
   const [fileName, setFileName] = useState('')
-  const [preview,  setPreview]  = useState(null)
+  const [preview, setPreview] = useState(null)
   const inputRef = useRef()
 
   const handleChange = (e) => {
@@ -927,7 +927,7 @@ function StepBar({ current }) {
             <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold border-2 transition-all
               ${i < current ? 'bg-[#1a5c2a] border-[#1a5c2a] text-white' :
                 i === current ? 'bg-[#f0c020] border-[#f0c020] text-[#1a5c2a]' :
-                'bg-white border-gray-300 text-gray-400'}`}>
+                  'bg-white border-gray-300 text-gray-400'}`}>
               {i < current ? '✓' : i + 1}
             </div>
             <span className={`text-xs mt-1 font-semibold hidden sm:block ${i === current ? 'text-[#1a5c2a]' : 'text-gray-400'}`}>
@@ -954,8 +954,8 @@ export default function ApplyFormPage() {
   const post = location.state?.post
   const { show: showToast, ToastContainer } = useToast()
 
-  const [step,               setStep]               = useState(0)
-  const [loading,            setLoading]            = useState(false)
+  const [step, setStep] = useState(0)
+  const [loading, setLoading] = useState(false)
   const [declarationChecked, setDeclarationChecked] = useState(false)
 
   const [form, setForm] = useState({
@@ -978,8 +978,8 @@ export default function ApplyFormPage() {
     { class: 'Graduation', rollEnroll: '', college: '', board: '', year: '', totalMarks: '', obtainMarks: '', percentage: '' },
   ])
 
-  const show10thDoc       = isEduRowFilled(education[0])
-  const show12thDoc       = isEduRowFilled(education[1])
+  const show10thDoc = isEduRowFilled(education[0])
+  const show12thDoc = isEduRowFilled(education[1])
   const showGraduationDoc = isEduRowFilled(education[2])
 
   useEffect(() => { if (!post) navigate('/posts', { replace: true }) }, [post, navigate])
@@ -994,7 +994,7 @@ export default function ApplyFormPage() {
     return () => { const el = document.getElementById('razorpay-script'); if (el) document.body.removeChild(el) }
   }, [])
 
-  const handleChange    = (e) => setForm(p => ({ ...p, [e.target.name]: e.target.value }))
+  const handleChange = (e) => setForm(p => ({ ...p, [e.target.name]: e.target.value }))
   const handleFileChange = (name, file) => setFiles(p => ({ ...p, [name]: file }))
 
   const handleEduChange = (i, field, value) => {
@@ -1002,10 +1002,12 @@ export default function ApplyFormPage() {
       const updated = prev.map((r, idx) => idx === i ? { ...r, [field]: value } : r)
       if (field === 'obtainMarks' || field === 'totalMarks') {
         const row = updated[i]
-        const total  = parseFloat(field === 'totalMarks'  ? value : row.totalMarks)
+        const total = parseFloat(field === 'totalMarks' ? value : row.totalMarks)
         const obtain = parseFloat(field === 'obtainMarks' ? value : row.obtainMarks)
-        updated[i] = { ...updated[i], percentage: (total > 0 && obtain >= 0 && obtain <= total)
-          ? ((obtain / total) * 100).toFixed(2) : '' }
+        updated[i] = {
+          ...updated[i], percentage: (total > 0 && obtain >= 0 && obtain <= total)
+            ? ((obtain / total) * 100).toFixed(2) : ''
+        }
       }
       return updated
     })
@@ -1013,126 +1015,230 @@ export default function ApplyFormPage() {
 
   const validateStep0 = () => {
     const required = [
-      ['name',          "Applicant's Full Name"],
-      ['fatherName',    "Father's / Husband's Name"],
-      ['dob',           'Date of Birth'],
-      ['mobile',        'Mobile Number'],
-      ['email',         'Email Address'],
-      ['gender',        'Gender'],
-      ['category',      'Category'],
-      ['nationality',   'Nationality'],
-      ['state',         'State'],
-      ['district',      'District'],
-      ['address',       'Full Address'],
+      ['name', "Applicant's Full Name"],
+      ['fatherName', "Father's / Husband's Name"],
+      ['dob', 'Date of Birth'],
+      ['mobile', 'Mobile Number'],
+      ['email', 'Email Address'],
+      ['gender', 'Gender'],
+      ['category', 'Category'],
+      ['nationality', 'Nationality'],
+      ['state', 'State'],
+      ['district', 'District'],
+      ['address', 'Full Address'],
       ['qualification', 'Educational Qualification'],
-      ['aadhar',        'Aadhar Card Number'],
+      ['aadhar', 'Aadhar Card Number'],
     ]
     for (const [key, label] of required) {
       if (!form[key]?.trim()) { showToast(`Please fill in: ${label}`); return false }
     }
-    if (!/^\d{12}$/.test(form.aadhar))                            { showToast('Aadhar number must be exactly 12 digits'); return false }
-    if (!/^\d{10}$/.test(form.mobile))                            { showToast('Mobile number must be exactly 10 digits'); return false }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))          { showToast('Please enter a valid email address'); return false }
+    if (!/^\d{12}$/.test(form.aadhar)) { showToast('Aadhar number must be exactly 12 digits'); return false }
+    if (!/^\d{10}$/.test(form.mobile)) { showToast('Mobile number must be exactly 10 digits'); return false }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { showToast('Please enter a valid email address'); return false }
     return true
   }
 
   const validateStep1 = () => {
-    if (!files.photo)                         { showToast('Please upload your Passport-size Photo'); return false }
-    if (!files.signature)                     { showToast('Please upload your Signature'); return false }
-    if (!files.aadharDoc)                     { showToast('Please upload your Aadhar Card document'); return false }
-    if (show10thDoc && !files.tenthDoc)       { showToast('Please upload your 10th Class Marksheet'); return false }
-    if (show12thDoc && !files.twelfthDoc)     { showToast('Please upload your 12th Class Marksheet'); return false }
+    if (!files.photo) { showToast('Please upload your Passport-size Photo'); return false }
+    if (!files.signature) { showToast('Please upload your Signature'); return false }
+    if (!files.aadharDoc) { showToast('Please upload your Aadhar Card document'); return false }
+    if (show10thDoc && !files.tenthDoc) { showToast('Please upload your 10th Class Marksheet'); return false }
+    if (show12thDoc && !files.twelfthDoc) { showToast('Please upload your 12th Class Marksheet'); return false }
     if (showGraduationDoc && !files.graduationDoc) { showToast('Please upload your Graduation Certificate'); return false }
-    if (!declarationChecked)                  { showToast('Please read and accept the declaration'); return false }
+    if (!declarationChecked) { showToast('Please read and accept the declaration'); return false }
     return true
   }
+
+  // const handlePayAndSubmit = async () => {
+  //   if (!validateStep1() || loading) return
+  //   setLoading(true)
+  //   if (!window.Razorpay) {
+  //     showToast('Payment gateway is loading. Please wait and try again.', 'warning')
+  //     setLoading(false); return
+  //   }
+
+  //   const amountPaise = 100  // ₹1 for testing
+
+  //   const options = {
+  //     key:         import.meta.env.VITE_RAZORPAY_KEY_ID,
+  //     amount:      amountPaise,
+  //     currency:    'INR',
+  //     name:        'Rural Welfare Program',
+  //     description: `Application Fee — ${post.title}`,
+  //     prefill:     { name: form.name, email: form.email, contact: form.mobile },
+  //     theme:       { color: '#1a5c2a' },
+
+  //     handler: async (response) => {
+  //       try {
+  //         const fd = new FormData()
+  //         Object.entries(form).forEach(([k, v]) => fd.append(k, v))
+  //         fd.append('postTitle', post.title)
+  //         fd.append('postLevel', post.level || '')
+  //         fd.append('education', JSON.stringify(education))
+  //         fd.append('razorpay_payment_id', response.razorpay_payment_id)
+  //         if (response.razorpay_order_id)  fd.append('razorpay_order_id',  response.razorpay_order_id)
+  //         if (response.razorpay_signature) fd.append('razorpay_signature', response.razorpay_signature)
+  //         if (files.photo)            fd.append('photo',            files.photo)
+  //         if (files.signature)        fd.append('signature',        files.signature)
+  //         if (files.aadharDoc)        fd.append('aadharDoc',        files.aadharDoc)
+  //         if (files.tenthDoc)         fd.append('tenthDoc',         files.tenthDoc)
+  //         if (files.twelfthDoc)       fd.append('twelfthDoc',       files.twelfthDoc)
+  //         if (files.graduationDoc)    fd.append('graduationDoc',    files.graduationDoc)
+  //         if (files.qualificationDoc) fd.append('qualificationDoc', files.qualificationDoc)
+  //         if (files.additionalDoc)    fd.append('additionalDoc',    files.additionalDoc)
+
+  //         // const verifyRes = await fetch('/api/verify-payment', { method: 'POST', body: fd })
+  //         const verifyRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify-payment`, { method: 'POST', body: fd })
+
+  //         let result
+  //         try   { result = await verifyRes.json() }
+  //         catch { throw new Error('Server returned an unexpected response. Please contact support.') }
+
+  //         if (!verifyRes.ok) throw new Error(result?.error || `Server error (${verifyRes.status}).`)
+  //         if (result.success) {
+  //           navigate('/success', {
+  //             state: {
+  //               name: form.name, post: post.title,
+  //               pdfBase64: result.pdfBase64, filename: result.filename,
+  //               driveLink: result.driveLink, registrationNo: result.registrationNo,
+  //               paymentId: response.razorpay_payment_id,
+  //             },
+  //           })
+  //         } else {
+  //           throw new Error(result?.error || 'Payment verification failed.')
+  //         }
+  //       } catch (err) {
+  //         showToast(`Submission failed. Contact support with Payment ID: ${response.razorpay_payment_id}`, 'error')
+  //         setLoading(false)
+  //       }
+  //     },
+
+  //     modal: { ondismiss: () => { setLoading(false); showToast('Payment cancelled.', 'warning') } },
+  //   }
+
+  //   try {
+  //     const rzp = new window.Razorpay(options)
+  //     rzp.on('payment.failed', (r) => {
+  //       setLoading(false)
+  //       showToast(`Payment failed: ${r.error?.description || 'Unknown error'}`, 'error')
+  //     })
+  //     rzp.open()
+  //   } catch (err) {
+  //     showToast('Could not open payment window. Check your internet connection.', 'error')
+  //     setLoading(false)
+  //   }
+  // }
 
   const handlePayAndSubmit = async () => {
     if (!validateStep1() || loading) return
     setLoading(true)
     if (!window.Razorpay) {
-      showToast('Payment gateway is loading. Please wait and try again.', 'warning')
+      showToast('Payment gateway is loading. Please wait.', 'warning')
       setLoading(false); return
     }
 
-    const amountPaise = 100  // ₹1 for testing
-
-    const options = {
-      key:         import.meta.env.VITE_RAZORPAY_KEY_ID,
-      amount:      amountPaise,
-      currency:    'INR',
-      name:        'Rural Welfare Program',
-      description: `Application Fee — ${post.title}`,
-      prefill:     { name: form.name, email: form.email, contact: form.mobile },
-      theme:       { color: '#1a5c2a' },
-
-      handler: async (response) => {
-        try {
-          const fd = new FormData()
-          Object.entries(form).forEach(([k, v]) => fd.append(k, v))
-          fd.append('postTitle', post.title)
-          fd.append('postLevel', post.level || '')
-          fd.append('education', JSON.stringify(education))
-          fd.append('razorpay_payment_id', response.razorpay_payment_id)
-          if (response.razorpay_order_id)  fd.append('razorpay_order_id',  response.razorpay_order_id)
-          if (response.razorpay_signature) fd.append('razorpay_signature', response.razorpay_signature)
-          if (files.photo)            fd.append('photo',            files.photo)
-          if (files.signature)        fd.append('signature',        files.signature)
-          if (files.aadharDoc)        fd.append('aadharDoc',        files.aadharDoc)
-          if (files.tenthDoc)         fd.append('tenthDoc',         files.tenthDoc)
-          if (files.twelfthDoc)       fd.append('twelfthDoc',       files.twelfthDoc)
-          if (files.graduationDoc)    fd.append('graduationDoc',    files.graduationDoc)
-          if (files.qualificationDoc) fd.append('qualificationDoc', files.qualificationDoc)
-          if (files.additionalDoc)    fd.append('additionalDoc',    files.additionalDoc)
-
-          // const verifyRes = await fetch('/api/verify-payment', { method: 'POST', body: fd })
-          const verifyRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/verify-payment`, { method: 'POST', body: fd })
-          
-          let result
-          try   { result = await verifyRes.json() }
-          catch { throw new Error('Server returned an unexpected response. Please contact support.') }
-
-          if (!verifyRes.ok) throw new Error(result?.error || `Server error (${verifyRes.status}).`)
-          if (result.success) {
-            navigate('/success', {
-              state: {
-                name: form.name, post: post.title,
-                pdfBase64: result.pdfBase64, filename: result.filename,
-                driveLink: result.driveLink, registrationNo: result.registrationNo,
-                paymentId: response.razorpay_payment_id,
-              },
-            })
-          } else {
-            throw new Error(result?.error || 'Payment verification failed.')
-          }
-        } catch (err) {
-          showToast(`Submission failed. Contact support with Payment ID: ${response.razorpay_payment_id}`, 'error')
-          setLoading(false)
-        }
-      },
-
-      modal: { ondismiss: () => { setLoading(false); showToast('Payment cancelled.', 'warning') } },
-    }
-
     try {
+      // Step 1: Create order on server (gets correct amount server-side)
+      const orderRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category: form.category }),
+      })
+      const orderData = await orderRes.json()
+      if (!orderRes.ok) throw new Error(orderData.error || 'Failed to create order')
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: orderData.amount,   // from server
+        order_id: orderData.orderId,  // ← THIS is what gives you razorpay_order_id + signature
+        currency: 'INR',
+        name: 'Rural Welfare Program',
+        description: `Application Fee — ${post.title}`,
+        prefill: { name: form.name, email: form.email, contact: form.mobile },
+        theme: { color: '#1a5c2a' },
+
+        handler: async (response) => {
+          // response now has: razorpay_payment_id, razorpay_order_id, razorpay_signature
+          try {
+            const fd = new FormData()
+            Object.entries(form).forEach(([k, v]) => fd.append(k, v))
+            fd.append('postTitle', post.title)
+            fd.append('postLevel', post.level || '')
+            fd.append('education', JSON.stringify(education))
+            fd.append('razorpay_payment_id', response.razorpay_payment_id)
+            fd.append('razorpay_order_id', response.razorpay_order_id)
+            fd.append('razorpay_signature', response.razorpay_signature)
+            if (files.photo) fd.append('photo', files.photo)
+            if (files.signature) fd.append('signature', files.signature)
+            if (files.aadharDoc) fd.append('aadharDoc', files.aadharDoc)
+            if (files.tenthDoc) fd.append('tenthDoc', files.tenthDoc)
+            if (files.twelfthDoc) fd.append('twelfthDoc', files.twelfthDoc)
+            if (files.graduationDoc) fd.append('graduationDoc', files.graduationDoc)
+            if (files.qualificationDoc) fd.append('qualificationDoc', files.qualificationDoc)
+            if (files.additionalDoc) fd.append('additionalDoc', files.additionalDoc)
+
+            const verifyRes = await fetch(
+              `${import.meta.env.VITE_BACKEND_URL}/api/verify-payment`,
+              { method: 'POST', body: fd }
+            )
+
+            let result
+            try { result = await verifyRes.json() }
+            catch { throw new Error('Unexpected server response. Contact support.') }
+
+            if (!verifyRes.ok) throw new Error(result?.error || `Server error (${verifyRes.status})`)
+
+            if (result.success) {
+              navigate('/success', {
+                state: {
+                  name: form.name,
+                  post: post.title,
+                  pdfBase64: result.pdfBase64,
+                  filename: result.filename,
+                  driveLink: result.driveLink,
+                  registrationNo: result.registrationNo,
+                  paymentId: response.razorpay_payment_id,
+                },
+              })
+            } else {
+              throw new Error(result?.error || 'Verification failed.')
+            }
+          } catch (err) {
+            showToast(
+              `Submission failed. Contact support with Payment ID: ${response.razorpay_payment_id}`,
+              'error'
+            )
+            setLoading(false)
+          }
+        },
+
+        modal: {
+          ondismiss: () => {
+            setLoading(false)
+            showToast('Payment cancelled.', 'warning')
+          },
+        },
+      }
+
       const rzp = new window.Razorpay(options)
       rzp.on('payment.failed', (r) => {
         setLoading(false)
         showToast(`Payment failed: ${r.error?.description || 'Unknown error'}`, 'error')
       })
       rzp.open()
+
     } catch (err) {
-      showToast('Could not open payment window. Check your internet connection.', 'error')
+      showToast(err.message || 'Could not initiate payment. Check your connection.', 'error')
       setLoading(false)
     }
   }
 
   const states = [
-    'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat',
-    'Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh',
-    'Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan',
-    'Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal',
-    'Delhi','Jammu & Kashmir','Ladakh',
+    'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat',
+    'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh',
+    'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan',
+    'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+    'Delhi', 'Jammu & Kashmir', 'Ladakh',
   ]
 
   if (!post) return null
@@ -1183,11 +1289,11 @@ export default function ApplyFormPage() {
 
                 {/* Text inputs */}
                 {[
-                  { label: "Applicant's Full Name",     name: 'name',       type: 'text', placeholder: 'Enter full name as per Aadhar' },
+                  { label: "Applicant's Full Name", name: 'name', type: 'text', placeholder: 'Enter full name as per Aadhar' },
                   { label: "Father's / Husband's Name", name: 'fatherName', type: 'text', placeholder: "Enter father's or husband's name" },
-                  { label: "Mother's Name",              name: 'motherName', type: 'text', placeholder: "Enter mother's name" },
-                  { label: 'Date of Birth',              name: 'dob',        type: 'date' },
-                  { label: 'Aadhar Card Number',         name: 'aadhar',     type: 'text', maxLength: 12, placeholder: '12-digit Aadhar number' },
+                  { label: "Mother's Name", name: 'motherName', type: 'text', placeholder: "Enter mother's name" },
+                  { label: 'Date of Birth', name: 'dob', type: 'date' },
+                  { label: 'Aadhar Card Number', name: 'aadhar', type: 'text', maxLength: 12, placeholder: '12-digit Aadhar number' },
                 ].map((f) => (
                   <div key={f.name}>
                     <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">{f.label} <span className="text-red-500">*</span></label>
@@ -1241,7 +1347,7 @@ export default function ApplyFormPage() {
                 <table className="w-full text-xs border-collapse">
                   <thead>
                     <tr className="bg-[#1a5c2a] text-white">
-                      {['Class','Roll/Enroll No.','College / School','Board / University','Year','Total Marks','Obtain Marks','%'].map(h => (
+                      {['Class', 'Roll/Enroll No.', 'College / School', 'Board / University', 'Year', 'Total Marks', 'Obtain Marks', '%'].map(h => (
                         <th key={h} className="px-2 py-2 text-left font-semibold whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
@@ -1250,7 +1356,7 @@ export default function ApplyFormPage() {
                     {education.map((row, i) => (
                       <tr key={i} className={i % 2 === 0 ? 'bg-[#f0f7f0]' : 'bg-white'}>
                         <td className="px-2 py-1.5 font-semibold text-[#1a5c2a] whitespace-nowrap">{row.class}</td>
-                        {['rollEnroll','college','board','year','totalMarks','obtainMarks'].map(field => (
+                        {['rollEnroll', 'college', 'board', 'year', 'totalMarks', 'obtainMarks'].map(field => (
                           <td key={field} className="px-1 py-1">
                             <input type="text" value={row[field]}
                               onChange={(e) => handleEduChange(i, field, e.target.value)}
@@ -1269,8 +1375,8 @@ export default function ApplyFormPage() {
               <h3 className="text-[#1a5c2a] font-bold text-base mb-4 border-b-2 border-[#f0c020] pb-2">📞 Contact Details</h3>
               <div className="grid sm:grid-cols-2 gap-4 mb-6">
                 {[
-                  { label: 'Mobile Number (10 digits)', name: 'mobile', type: 'tel',   maxLength: 10, placeholder: '10-digit mobile number' },
-                  { label: 'Email Address',             name: 'email',  type: 'email',               placeholder: 'your@email.com' },
+                  { label: 'Mobile Number (10 digits)', name: 'mobile', type: 'tel', maxLength: 10, placeholder: '10-digit mobile number' },
+                  { label: 'Email Address', name: 'email', type: 'email', placeholder: 'your@email.com' },
                 ].map(f => (
                   <div key={f.name}>
                     <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">{f.label} <span className="text-red-500">*</span></label>
@@ -1315,9 +1421,9 @@ export default function ApplyFormPage() {
               <div className="mb-4">
                 <p className="text-xs font-bold text-[#1a5c2a] uppercase tracking-wider mb-3">Required Documents</p>
                 <div className="grid sm:grid-cols-2 gap-5">
-                  <FileUpload label="Applicant Photo"   name="photo"    accept="image/jpeg,image/png,image/jpg"                     required onChange={handleFileChange} hint="JPG or PNG • Passport-size, clear face" />
-                  <FileUpload label="Signature"          name="signature" accept="image/jpeg,image/png,image/jpg"                    required onChange={handleFileChange} hint="JPG or PNG • Sign on white paper" />
-                  <FileUpload label="Aadhar Card"        name="aadharDoc" accept="image/jpeg,image/png,image/jpg,application/pdf"   required onChange={handleFileChange} hint="JPG, PNG or PDF • Both sides visible" />
+                  <FileUpload label="Applicant Photo" name="photo" accept="image/jpeg,image/png,image/jpg" required onChange={handleFileChange} hint="JPG or PNG • Passport-size, clear face" />
+                  <FileUpload label="Signature" name="signature" accept="image/jpeg,image/png,image/jpg" required onChange={handleFileChange} hint="JPG or PNG • Sign on white paper" />
+                  <FileUpload label="Aadhar Card" name="aadharDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF • Both sides visible" />
                 </div>
               </div>
 
@@ -1327,8 +1433,8 @@ export default function ApplyFormPage() {
                   <p className="text-xs font-bold text-[#1a5c2a] uppercase tracking-wider mb-1">Education Documents</p>
                   <p className="text-gray-400 text-xs mb-3">Upload marksheets for classes you filled in previous step.</p>
                   <div className="grid sm:grid-cols-2 gap-5">
-                    {show10thDoc       && <FileUpload label="10th Class Marksheet"               name="tenthDoc"     accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF" />}
-                    {show12thDoc       && <FileUpload label="12th Class Marksheet"               name="twelfthDoc"   accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF" />}
+                    {show10thDoc && <FileUpload label="10th Class Marksheet" name="tenthDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF" />}
+                    {show12thDoc && <FileUpload label="12th Class Marksheet" name="twelfthDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF" />}
                     {showGraduationDoc && <FileUpload label="Graduation Certificate / Marksheet" name="graduationDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF" />}
                   </div>
                 </div>
@@ -1338,8 +1444,8 @@ export default function ApplyFormPage() {
               <div className="mb-6">
                 <p className="text-xs font-bold text-[#1a5c2a] uppercase tracking-wider mb-3">Optional Documents</p>
                 <div className="grid sm:grid-cols-2 gap-5">
-                 {/* <FileUpload label="Additional Qualification Certificate" name="qualificationDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required={false} onChange={handleFileChange} hint="Any other degree or diploma" /> */}
-                  <FileUpload label="Additional Document"                  name="additionalDoc"    accept="image/jpeg,image/png,image/jpg,application/pdf" required={false} onChange={handleFileChange} hint="Any other supporting document" />
+                  {/* <FileUpload label="Additional Qualification Certificate" name="qualificationDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required={false} onChange={handleFileChange} hint="Any other degree or diploma" /> */}
+                  <FileUpload label="Additional Document" name="additionalDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required={false} onChange={handleFileChange} hint="Any other supporting document" />
                 </div>
               </div>
 
