@@ -1130,108 +1130,112 @@ export default function ApplyFormPage() {
   // }
 
   const handlePayAndSubmit = async () => {
-    if (!validateStep1() || loading) return
-    setLoading(true)
-    if (!window.Razorpay) {
-      showToast('Payment gateway is loading. Please wait.', 'warning')
-      setLoading(false); return
-    }
+  if (!validateStep1() || loading) return
+  setLoading(true)
 
-    try {
-      // Step 1: Create order on server (gets correct amount server-side)
-      const orderRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/create-order`, {
+  if (!window.Razorpay) {
+    showToast('Payment gateway is loading. Please wait.', 'warning')
+    setLoading(false)
+    return
+  }
+
+  try {
+    // Step 1: Server se order banao
+    const orderRes = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/create-order`,
+      {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ category: form.category }),
-      })
-      const orderData = await orderRes.json()
-      if (!orderRes.ok) throw new Error(orderData.error || 'Failed to create order')
-
-      const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-        amount: orderData.amount,   // from server
-        order_id: orderData.orderId,  // ← THIS is what gives you razorpay_order_id + signature
-        currency: 'INR',
-        name: 'Rural Welfare Program',
-        description: `Application Fee — ${post.title}`,
-        prefill: { name: form.name, email: form.email, contact: form.mobile },
-        theme: { color: '#1a5c2a' },
-
-        handler: async (response) => {
-          // response now has: razorpay_payment_id, razorpay_order_id, razorpay_signature
-          try {
-            const fd = new FormData()
-            Object.entries(form).forEach(([k, v]) => fd.append(k, v))
-            fd.append('postTitle', post.title)
-            fd.append('postLevel', post.level || '')
-            fd.append('education', JSON.stringify(education))
-            fd.append('razorpay_payment_id', response.razorpay_payment_id)
-            fd.append('razorpay_order_id', response.razorpay_order_id)
-            fd.append('razorpay_signature', response.razorpay_signature)
-            if (files.photo) fd.append('photo', files.photo)
-            if (files.signature) fd.append('signature', files.signature)
-            if (files.aadharDoc) fd.append('aadharDoc', files.aadharDoc)
-            if (files.tenthDoc) fd.append('tenthDoc', files.tenthDoc)
-            if (files.twelfthDoc) fd.append('twelfthDoc', files.twelfthDoc)
-            if (files.graduationDoc) fd.append('graduationDoc', files.graduationDoc)
-            if (files.qualificationDoc) fd.append('qualificationDoc', files.qualificationDoc)
-            if (files.additionalDoc) fd.append('additionalDoc', files.additionalDoc)
-
-            const verifyRes = await fetch(
-              `${import.meta.env.VITE_BACKEND_URL}/api/verify-payment`,
-              { method: 'POST', body: fd }
-            )
-
-            let result
-            try { result = await verifyRes.json() }
-            catch { throw new Error('Unexpected server response. Contact support.') }
-
-            if (!verifyRes.ok) throw new Error(result?.error || `Server error (${verifyRes.status})`)
-
-            if (result.success) {
-              navigate('/success', {
-                state: {
-                  name: form.name,
-                  post: post.title,
-                  pdfBase64: result.pdfBase64,
-                  filename: result.filename,
-                  driveLink: result.driveLink,
-                  registrationNo: result.registrationNo,
-                  paymentId: response.razorpay_payment_id,
-                },
-              })
-            } else {
-              throw new Error(result?.error || 'Verification failed.')
-            }
-          } catch (err) {
-            showToast(
-              `Submission failed. Contact support with Payment ID: ${response.razorpay_payment_id}`,
-              'error'
-            )
-            setLoading(false)
-          }
-        },
-
-        modal: {
-          ondismiss: () => {
-            setLoading(false)
-            showToast('Payment cancelled.', 'warning')
-          },
-        },
       }
+    )
+    const orderData = await orderRes.json()
+    if (!orderRes.ok) throw new Error(orderData.error || 'Failed to create order')
 
-      const rzp = new window.Razorpay(options)
-      rzp.on('payment.failed', (r) => {
-        setLoading(false)
-        showToast(`Payment failed: ${r.error?.description || 'Unknown error'}`, 'error')
-      })
-      rzp.open()
+    // Step 2: Razorpay open karo — amount mat dalo jab order_id ho
+    const options = {
+      key:         import.meta.env.VITE_RAZORPAY_KEY_ID,
+      order_id:    orderData.orderId,   // ✅ server se
+      currency:    'INR',
+      name:        'Rural Welfare Program',
+      description: `Application Fee — ${post.title}`,
+      prefill:     { name: form.name, email: form.email, contact: form.mobile },
+      theme:       { color: '#1a5c2a' },
 
-    } catch (err) {
-      showToast(err.message || 'Could not initiate payment. Check your connection.', 'error')
-      setLoading(false)
+      handler: async (response) => {
+        try {
+          const fd = new FormData()
+          Object.entries(form).forEach(([k, v]) => fd.append(k, v))
+          fd.append('postTitle',            post.title)
+          fd.append('postLevel',            post.level || '')
+          fd.append('education',            JSON.stringify(education))
+          fd.append('razorpay_payment_id',  response.razorpay_payment_id)
+          fd.append('razorpay_order_id',    response.razorpay_order_id)
+          fd.append('razorpay_signature',   response.razorpay_signature)
+          if (files.photo)            fd.append('photo',            files.photo)
+          if (files.signature)        fd.append('signature',        files.signature)
+          if (files.aadharDoc)        fd.append('aadharDoc',        files.aadharDoc)
+          if (files.tenthDoc)         fd.append('tenthDoc',         files.tenthDoc)
+          if (files.twelfthDoc)       fd.append('twelfthDoc',       files.twelfthDoc)
+          if (files.graduationDoc)    fd.append('graduationDoc',    files.graduationDoc)
+          if (files.qualificationDoc) fd.append('qualificationDoc', files.qualificationDoc)
+          if (files.additionalDoc)    fd.append('additionalDoc',    files.additionalDoc)
+
+          const verifyRes = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/api/verify-payment`,
+            { method: 'POST', body: fd }
+          )
+
+          let result
+          try   { result = await verifyRes.json() }
+          catch { throw new Error('Unexpected server response. Contact support.') }
+
+          if (!verifyRes.ok) throw new Error(result?.error || `Server error (${verifyRes.status})`)
+
+          if (result.success) {
+            navigate('/success', {
+              state: {
+                name:           form.name,
+                post:           post.title,
+                pdfBase64:      result.pdfBase64,
+                filename:       result.filename,
+                driveLink:      result.driveLink,
+                registrationNo: result.registrationNo,
+                paymentId:      response.razorpay_payment_id,
+              },
+            })
+          } else {
+            throw new Error(result?.error || 'Verification failed.')
+          }
+        } catch (err) {
+          showToast(
+            `Submission failed. Contact support with Payment ID: ${response.razorpay_payment_id}`,
+            'error'
+          )
+          setLoading(false)
+        }
+      },
+
+      modal: {
+        ondismiss: () => {
+          setLoading(false)
+          showToast('Payment cancelled.', 'warning')
+        },
+      },
     }
+
+    const rzp = new window.Razorpay(options)
+    rzp.on('payment.failed', (r) => {
+      setLoading(false)
+      showToast(`Payment failed: ${r.error?.description || 'Unknown error'}`, 'error')
+    })
+    rzp.open()
+
+  } catch (err) {
+    showToast(err.message || 'Could not initiate payment.', 'error')
+    setLoading(false)
   }
+}
 
   const states = [
     'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat',
