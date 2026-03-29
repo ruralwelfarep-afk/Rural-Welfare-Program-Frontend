@@ -297,7 +297,7 @@ export default function ContactPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <a
-              href="/apply"
+              href="/registration"
               className="bg-[#f0c020] text-[#1a5c2a] px-6 sm:px-8 py-3 rounded-full font-bold hover:bg-white transition-all shadow-lg text-sm sm:text-base"
             >
               Apply Now

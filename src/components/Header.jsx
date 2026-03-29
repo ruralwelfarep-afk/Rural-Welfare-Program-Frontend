@@ -15,7 +15,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 shadow-md">
       {/* Top bar — hidden on very small screens */}
       <div className="bg-[#1a5c2a] text-[#f0c020] text-xs py-1 px-3 text-center tracking-wide hidden sm:block">
-        🌿 Rural Welfare Program — In collaboration with UNDP &nbsp;|&nbsp; Toll-Free:&nbsp;1800-XXX-XXXX
+        🌿 Rural Welfare Program — Empowering Rural Communities Across India
       </div>
 
       {/* Main header */}

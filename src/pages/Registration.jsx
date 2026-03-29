@@ -9,7 +9,7 @@ export const posts = [
     title: 'Assistant Health Worker',
     level: 'Post 1',
     ageLimit: '18 – 50 Years',
-    feeGeneral: '₹1,100',
+    feeGeneral: '₹1,100', 
     feeOBC: '₹1,000',
     feeAmount: { General: 110000, OBC: 100000, SC: 100000, ST: 100000, EWS: 100000 },
     eligibility: ['12th Pass or above', 'Rural area women', 'Dedication to service'],
@@ -22,7 +22,7 @@ export const posts = [
     feeGeneral: '₹1,100',
     feeOBC: '₹1,000',
     feeAmount: { General: 110000, OBC: 100000, SC: 100000, ST: 100000, EWS: 100000 },
-    eligibility: ['12th Pass or above', 'Rural area women', 'Interest in social work'],
+    eligibility: ['10th Pass or above', 'Rural area women', 'Interest in social work'],
   },
 ]
 
