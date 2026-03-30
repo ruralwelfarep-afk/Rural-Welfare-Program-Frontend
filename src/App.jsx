@@ -33,8 +33,8 @@ export default function App() {
             <Route path="/apply" element={<ApplyFormPage />} />
             <Route path="/success" element={<SuccessPage />} />
             <Route path="/termsandconditions" element={<TermsPage />} />
-            <Route path="/privacypolicy" element={<PrivacyPolicyPage />} />
-              <Route path="/refundpolicy" element={<RefundPolicyPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+            <Route path="/refund-policy" element={<RefundPolicyPage />} />
             <Route path="*" element={<PlaceholderPage title="Page Not Found" />} />
           </Routes>
         </div>

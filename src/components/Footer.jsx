@@ -5,7 +5,7 @@ const links = [
   { to: '/about', label: 'About Us' },
   { to: '/registration', label: 'Registration' },
   { to: '/contact', label: 'Contact Us' },
-  { to: '/terms', label: 'Terms & Conditions' },
+  { to: '/termsandconditions', label: 'Terms & Conditions' },
   { to: '/privacy-policy', label: 'Privacy Policy' },
   { to: '/refund-policy', label: 'Refund Policy' },
 ]
