@@ -79,7 +79,7 @@ export default function SuccessPage() {
               ⬇️ Download Application PDF
             </button>
 
-            {driveLink && (
+            {/* {driveLink && (
               <a
                 href={driveLink}
                 target="_blank"
@@ -88,7 +88,7 @@ export default function SuccessPage() {
               >
                 📁 View on Google Drive
               </a>
-            )}
+            )} */}
 
             <button
               onClick={() => navigate('/')}
