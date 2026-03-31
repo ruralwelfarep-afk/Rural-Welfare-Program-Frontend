@@ -5,13 +5,13 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 const PAYMENT_CONFIG = {
-  upiId:         'pranshushrivastav907-1@okaxis',
-  qrCodeUrl:     '/qr-code.jpeg',
-  bankName:      'Punjab National Bank',
-  accountName:   'Pranshu Shrivastav',
+  upiId: 'pranshushrivastav907-1@okaxis',
+  qrCodeUrl: '/qr-code.jpeg',
+  bankName: 'Punjab National Bank',
+  accountName: 'Pranshu Shrivastav',
   accountNumber: '1887010007899',
-  ifscCode:      'PUNB0188720',
-  branch:        'Ranganj Bazar, Pratapgarh, UP - 230402',
+  ifscCode: 'PUNB0188720',
+  branch: 'Ranganj Bazar, Pratapgarh, UP - 230402',
 }
 
 const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL || ''
@@ -22,8 +22,8 @@ function compressImage(file, maxWidth = 800, quality = 0.7) {
     if (file.type === 'application/pdf') {
       const reader = new FileReader()
       reader.onload = (e) => resolve({
-        base64:       e.target.result.split(',')[1],
-        mimetype:     file.type,
+        base64: e.target.result.split(',')[1],
+        mimetype: file.type,
         originalName: file.name,
       })
       reader.readAsDataURL(file)
@@ -33,24 +33,24 @@ function compressImage(file, maxWidth = 800, quality = 0.7) {
     const url = URL.createObjectURL(file)
     img.onload = () => {
       URL.revokeObjectURL(url)
-      const scale  = Math.min(1, maxWidth / img.width)
+      const scale = Math.min(1, maxWidth / img.width)
       const canvas = document.createElement('canvas')
-      canvas.width  = img.width  * scale
+      canvas.width = img.width * scale
       canvas.height = img.height * scale
       const ctx = canvas.getContext('2d')
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
       const dataUrl = canvas.toDataURL('image/jpeg', quality)
       resolve({
-        base64:       dataUrl.split(',')[1],
-        mimetype:     'image/jpeg',
+        base64: dataUrl.split(',')[1],
+        mimetype: 'image/jpeg',
         originalName: file.name,
       })
     }
     img.onerror = () => {
       const reader = new FileReader()
       reader.onload = (e) => resolve({
-        base64:       e.target.result.split(',')[1],
-        mimetype:     file.type,
+        base64: e.target.result.split(',')[1],
+        mimetype: file.type,
         originalName: file.name,
       })
       reader.readAsDataURL(file)
@@ -78,7 +78,7 @@ function Toast({ message, type = 'error', onClose }) {
 
 function useToast() {
   const [toasts, setToasts] = useState([])
-  const show   = useCallback((message, type = 'error') => setToasts(p => [...p, { id: Date.now(), message, type }]), [])
+  const show = useCallback((message, type = 'error') => setToasts(p => [...p, { id: Date.now(), message, type }]), [])
   const remove = useCallback((id) => setToasts(p => p.filter(t => t.id !== id)), [])
   const ToastContainer = (
     <div className="fixed top-0 left-0 right-0 z-50 flex flex-col items-center gap-2 pt-4 pointer-events-none">
@@ -95,7 +95,7 @@ function useToast() {
 // ─── File Upload Field ────────────────────────────────────────────────────────
 function FileUpload({ label, name, accept, required, onChange, hint }) {
   const [fileName, setFileName] = useState('')
-  const [preview,  setPreview]  = useState(null)
+  const [preview, setPreview] = useState(null)
   const inputRef = useRef()
 
   const handleChange = (e) => {
@@ -171,7 +171,7 @@ function isEduRowFilled(row) {
 function CopyButton({ text }) {
   const [copied, setCopied] = useState(false)
   const copy = async () => {
-    try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000) } catch (_) {}
+    try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000) } catch (_) { }
   }
   return (
     <button onClick={copy} className="ml-2 text-xs bg-[#1a5c2a] text-white px-2 py-0.5 rounded-full hover:bg-[#2d7a3a] transition-all">
@@ -188,9 +188,12 @@ function PaymentInfoCard({ method, feeGeneral, feeOBC, category }) {
     return (
       <div className="bg-[#f0f7f0] border border-[#4a9e5c] rounded-2xl p-4 mb-5">
         <p className="text-[#1a5c2a] font-bold text-sm mb-3">📲 Pay via UPI</p>
-        <div className="flex flex-col sm:flex-row gap-5 items-start">
+        {/* <div className="flex flex-col sm:flex-row gap-5 items-start">
           <div className="flex flex-col items-center gap-2">
-            <div className="w-28 h-28 bg-white border-2 border-[#1a5c2a] rounded-xl flex items-center justify-center overflow-hidden">
+            <div className="w-28 h-28 bg-white border-2 border-[#1a5c2a] rounded-xl flex items-center justify-center overflow-hidden"> */}
+        <div className="flex flex-col items-center gap-5">
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-52 h-52 bg-white border-2 border-[#1a5c2a] rounded-xl flex items-center justify-center overflow-hidden">
               <img
                 src={PAYMENT_CONFIG.qrCodeUrl}
                 alt="UPI QR Code"
@@ -237,11 +240,11 @@ function PaymentInfoCard({ method, feeGeneral, feeOBC, category }) {
       <p className="text-[#1a5c2a] font-bold text-sm mb-3">🏦 Bank Transfer Details</p>
       <div className="grid sm:grid-cols-2 gap-2 mb-3">
         {[
-          { label: 'Account Name',   value: PAYMENT_CONFIG.accountName   },
+          { label: 'Account Name', value: PAYMENT_CONFIG.accountName },
           { label: 'Account Number', value: PAYMENT_CONFIG.accountNumber },
-          { label: 'IFSC Code',      value: PAYMENT_CONFIG.ifscCode      },
-          { label: 'Bank Name',      value: PAYMENT_CONFIG.bankName      },
-          { label: 'Branch',         value: PAYMENT_CONFIG.branch        },
+          { label: 'IFSC Code', value: PAYMENT_CONFIG.ifscCode },
+          { label: 'Bank Name', value: PAYMENT_CONFIG.bankName },
+          { label: 'Branch', value: PAYMENT_CONFIG.branch },
         ].map(({ label, value }) => (
           <div key={label} className="bg-white rounded-xl px-4 py-2.5 border border-gray-200">
             <p className="text-xs text-gray-400 mb-0.5">{label}</p>
@@ -284,9 +287,9 @@ async function fetchRegistrationNo() {
     console.warn('[RegNo] VITE_APPS_SCRIPT_URL not set — using local fallback')
     return localFallbackRegNo()
   }
- 
+
   try {
-    const res  = await fetch(`${appsScriptUrl}?action=getNextRegNo`)
+    const res = await fetch(`${appsScriptUrl}?action=getNextRegNo`)
     const data = await res.json()
     if (data.success && data.registrationNo) {
       console.log('[RegNo] Fetched from Apps Script:', data.registrationNo)
@@ -299,13 +302,13 @@ async function fetchRegistrationNo() {
     return localFallbackRegNo()
   }
 }
- 
+
 // Fallback: agar Apps Script unreachable ho toh timestamp-based generate karo
 function localFallbackRegNo() {
-  const now   = new Date()
-  const year  = now.getFullYear()
+  const now = new Date()
+  const year = now.getFullYear()
   const month = String(now.getMonth() + 1).padStart(2, '0')
-  const rand  = String(Math.floor(Math.random() * 9000) + 1000)
+  const rand = String(Math.floor(Math.random() * 9000) + 1000)
   return `RWP${year}${month}${rand}`
 }
 
@@ -314,7 +317,7 @@ function localFallbackRegNo() {
 async function checkDuplicateUTR(utr) {
   if (!APPS_SCRIPT_URL) return false
   try {
-    const res  = await fetch(`${APPS_SCRIPT_URL}?action=checkUTR&utr=${encodeURIComponent(utr)}`)
+    const res = await fetch(`${APPS_SCRIPT_URL}?action=checkUTR&utr=${encodeURIComponent(utr)}`)
     const data = await res.json()
     return data.isDuplicate === true
   } catch {
@@ -326,59 +329,59 @@ async function checkDuplicateUTR(utr) {
 export default function ApplyFormPage() {
   const location = useLocation()
   const navigate = useNavigate()
-  const post     = location.state?.post
+  const post = location.state?.post
   const { show: showToast, ToastContainer } = useToast()
 
-  const [step,               setStep]               = useState(0)
-  const [loading,            setLoading]            = useState(false)
-  const [loadingMsg,         setLoadingMsg]         = useState('Processing...')
+  const [step, setStep] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [loadingMsg, setLoadingMsg] = useState('Processing...')
   const [declarationChecked, setDeclarationChecked] = useState(false)
-  const [paymentMethod,      setPaymentMethod]      = useState('UPI')
+  const [paymentMethod, setPaymentMethod] = useState('UPI')
 
   const [payment, setPayment] = useState({
-    senderName:        '',
-    senderUpiId:       '',
-    transactionId:     '',
-    paymentDate:       '',
-    paymentTime:       '',
+    senderName: '',
+    senderUpiId: '',
+    transactionId: '',
+    paymentDate: '',
+    paymentTime: '',
     accountHolderName: '',
-    lastFourDigits:    '',
-    referenceNumber:   '',
-    screenshotFile:    null,
+    lastFourDigits: '',
+    referenceNumber: '',
+    screenshotFile: null,
     screenshotPreview: null,
   })
 
   const [form, setForm] = useState({
-    name:         '',
-    fatherName:   '',
-    motherName:   '',
-    dob:          '',
-    mobile:       '',
-    email:        '',
-    gender:       '',
-    category:     '',
-    nationality:  'Indian',
-    state:        '',
-    district:     '',
-    block:        '',
-    pincode:      '',
-    address:      '',
-    qualification:'',
-    aadhar:       '',
-    bankAccountNo:'',
-    bankIfsc:     '',
-    bankName:     '',
+    name: '',
+    fatherName: '',
+    motherName: '',
+    dob: '',
+    mobile: '',
+    email: '',
+    gender: '',
+    category: '',
+    nationality: 'Indian',
+    state: '',
+    district: '',
+    block: '',
+    pincode: '',
+    address: '',
+    qualification: '',
+    aadhar: '',
+    bankAccountNo: '',
+    bankIfsc: '',
+    bankName: '',
   })
 
   const [files, setFiles] = useState({
-    photo:           null,
-    signature:       null,
-    aadharDoc:       null,
-    bankPassbook:    null,
-    tenthDoc:        null,
-    twelfthDoc:      null,
-    qualificationDoc:null,
-    additionalDoc:   null,
+    photo: null,
+    signature: null,
+    aadharDoc: null,
+    bankPassbook: null,
+    tenthDoc: null,
+    twelfthDoc: null,
+    qualificationDoc: null,
+    additionalDoc: null,
   })
 
   const [education, setEducation] = useState([
@@ -391,18 +394,18 @@ export default function ApplyFormPage() {
 
   useEffect(() => { if (!post) navigate('/posts', { replace: true }) }, [post, navigate])
 
-  const handleChange        = (e) => setForm(p => ({ ...p, [e.target.name]: e.target.value }))
-  const handleFileChange    = (name, file) => setFiles(p => ({ ...p, [name]: file }))
+  const handleChange = (e) => setForm(p => ({ ...p, [e.target.name]: e.target.value }))
+  const handleFileChange = (name, file) => setFiles(p => ({ ...p, [name]: file }))
   const handlePaymentChange = (e) => setPayment(p => ({ ...p, [e.target.name]: e.target.value }))
 
   const handleEduChange = (i, field, value) => {
     setEducation(prev => {
       const updated = prev.map((r, idx) => idx === i ? { ...r, [field]: value } : r)
       if (field === 'obtainMarks' || field === 'totalMarks') {
-        const row    = updated[i]
-        const total  = parseFloat(field === 'totalMarks'  ? value : row.totalMarks)
+        const row = updated[i]
+        const total = parseFloat(field === 'totalMarks' ? value : row.totalMarks)
         const obtain = parseFloat(field === 'obtainMarks' ? value : row.obtainMarks)
-        updated[i]   = {
+        updated[i] = {
           ...updated[i],
           percentage: (total > 0 && obtain >= 0 && obtain <= total)
             ? ((obtain / total) * 100).toFixed(2) : '',
@@ -414,32 +417,32 @@ export default function ApplyFormPage() {
 
   const validateStep0 = () => {
     const required = [
-      ['name',          "Applicant's Full Name"],
-      ['fatherName',    "Father's / Husband's Name"],
-      ['dob',           'Date of Birth'],
-      ['mobile',        'Mobile Number'],
-      ['email',         'Email Address'],
-      ['gender',        'Gender'],
-      ['category',      'Category'],
-      ['nationality',   'Nationality'],
-      ['state',         'State'],
-      ['district',      'District'],
-      ['block',         'Block'],
-      ['pincode',       'Pincode'],
-      ['address',       'Full Address'],
+      ['name', "Applicant's Full Name"],
+      ['fatherName', "Father's / Husband's Name"],
+      ['dob', 'Date of Birth'],
+      ['mobile', 'Mobile Number'],
+      ['email', 'Email Address'],
+      ['gender', 'Gender'],
+      ['category', 'Category'],
+      ['nationality', 'Nationality'],
+      ['state', 'State'],
+      ['district', 'District'],
+      ['block', 'Block'],
+      ['pincode', 'Pincode'],
+      ['address', 'Full Address'],
       ['qualification', 'Educational Qualification'],
-      ['aadhar',        'Aadhar Card Number'],
+      ['aadhar', 'Aadhar Card Number'],
       ['bankAccountNo', 'Bank Account Number'],
-      ['bankIfsc',      'Bank IFSC Code'],
-      ['bankName',      'Bank Name'],
+      ['bankIfsc', 'Bank IFSC Code'],
+      ['bankName', 'Bank Name'],
     ]
     for (const [key, label] of required) {
       if (!form[key]?.trim()) { showToast(`Please fill in: ${label}`); return false }
     }
-    if (!/^\d{12}$/.test(form.aadhar))                   { showToast('Aadhar number must be exactly 12 digits');          return false }
-    if (!/^\d{10}$/.test(form.mobile))                   { showToast('Mobile number must be exactly 10 digits');          return false }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { showToast('Please enter a valid email address');                return false }
-    if (!/^\d{6}$/.test(form.pincode))                   { showToast('Pincode must be exactly 6 digits');                 return false }
+    if (!/^\d{12}$/.test(form.aadhar)) { showToast('Aadhar number must be exactly 12 digits'); return false }
+    if (!/^\d{10}$/.test(form.mobile)) { showToast('Mobile number must be exactly 10 digits'); return false }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) { showToast('Please enter a valid email address'); return false }
+    if (!/^\d{6}$/.test(form.pincode)) { showToast('Pincode must be exactly 6 digits'); return false }
     if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(form.bankIfsc.toUpperCase())) {
       showToast('Enter a valid IFSC Code (e.g. SBIN0001234)'); return false
     }
@@ -447,39 +450,39 @@ export default function ApplyFormPage() {
   }
 
   const validateStep1 = () => {
-    if (!files.photo)         { showToast('Please upload your Passport-size Photo');  return false }
-    if (!files.signature)     { showToast('Please upload your Signature');            return false }
-    if (!files.aadharDoc)     { showToast('Please upload your Aadhar Card document'); return false }
-    if (!files.bankPassbook)  { showToast('Please upload your Bank Passbook');        return false }
-    if (show10thDoc && !files.tenthDoc)   { showToast('Please upload your 10th Class Marksheet'); return false }
+    if (!files.photo) { showToast('Please upload your Passport-size Photo'); return false }
+    if (!files.signature) { showToast('Please upload your Signature'); return false }
+    if (!files.aadharDoc) { showToast('Please upload your Aadhar Card document'); return false }
+    if (!files.bankPassbook) { showToast('Please upload your Bank Passbook'); return false }
+    if (show10thDoc && !files.tenthDoc) { showToast('Please upload your 10th Class Marksheet'); return false }
     if (show12thDoc && !files.twelfthDoc) { showToast('Please upload your 12th Class Marksheet'); return false }
-    if (!declarationChecked)  { showToast('Please read and accept the declaration');  return false }
+    if (!declarationChecked) { showToast('Please read and accept the declaration'); return false }
     return true
   }
 
   const validateStep2 = () => {
     if (paymentMethod === 'UPI') {
-      if (!payment.senderName?.trim())    { showToast('Please enter Sender Name');                  return false }
-      if (!payment.senderUpiId?.trim())   { showToast('Please enter your Sender UPI ID');           return false }
-      if (!payment.transactionId?.trim()) { showToast('Transaction ID is required');                return false }
+      if (!payment.senderName?.trim()) { showToast('Please enter Sender Name'); return false }
+      if (!payment.senderUpiId?.trim()) { showToast('Please enter your Sender UPI ID'); return false }
+      if (!payment.transactionId?.trim()) { showToast('Transaction ID is required'); return false }
       if (!/^[a-zA-Z0-9_\-]{8,}$/.test(payment.transactionId.trim())) {
         showToast('Enter a valid Transaction ID (min 8 characters)'); return false
       }
-      if (!payment.paymentDate?.trim())   { showToast('Please enter Payment Date');                 return false }
-      if (!payment.paymentTime?.trim())   { showToast('Please enter Payment Time');                 return false }
-      if (!payment.screenshotFile)        { showToast('Please upload payment screenshot');          return false }
+      if (!payment.paymentDate?.trim()) { showToast('Please enter Payment Date'); return false }
+      if (!payment.paymentTime?.trim()) { showToast('Please enter Payment Time'); return false }
+      if (!payment.screenshotFile) { showToast('Please upload payment screenshot'); return false }
     } else {
-      if (!payment.accountHolderName?.trim()) { showToast('Please enter Account Holder Name');     return false }
+      if (!payment.accountHolderName?.trim()) { showToast('Please enter Account Holder Name'); return false }
       if (!payment.lastFourDigits?.trim() || !/^\d{4}$/.test(payment.lastFourDigits)) {
         showToast('Last 4 digits must be exactly 4 digits'); return false
       }
-      if (!payment.referenceNumber?.trim()) { showToast('UTR / Reference Number is required');     return false }
+      if (!payment.referenceNumber?.trim()) { showToast('UTR / Reference Number is required'); return false }
       if (!/^[a-zA-Z0-9_\-]{8,}$/.test(payment.referenceNumber.trim())) {
         showToast('Enter a valid UTR / Reference Number (min 8 characters)'); return false
       }
-      if (!payment.paymentDate?.trim())   { showToast('Please enter Payment Date');                 return false }
-      if (!payment.paymentTime?.trim())   { showToast('Please enter Payment Time');                 return false }
-      if (!payment.screenshotFile)        { showToast('Please upload payment screenshot');          return false }
+      if (!payment.paymentDate?.trim()) { showToast('Please enter Payment Date'); return false }
+      if (!payment.paymentTime?.trim()) { showToast('Please enter Payment Time'); return false }
+      if (!payment.screenshotFile) { showToast('Please upload payment screenshot'); return false }
     }
     return true
   }
@@ -513,34 +516,34 @@ export default function ApplyFormPage() {
         tenthDocObj, twelfthDocObj,
         qualDocObj, addDocObj, screenshotObj,
       ] = await Promise.all([
-        files.photo            ? compressImage(files.photo,            800,  0.75) : Promise.resolve(null),
-        files.signature        ? compressImage(files.signature,        600,  0.80) : Promise.resolve(null),
-        files.aadharDoc        ? compressImage(files.aadharDoc,        1200, 0.80) : Promise.resolve(null),
-        files.bankPassbook     ? compressImage(files.bankPassbook,     1200, 0.80) : Promise.resolve(null),
-        files.tenthDoc         ? compressImage(files.tenthDoc,         1200, 0.80) : Promise.resolve(null),
-        files.twelfthDoc       ? compressImage(files.twelfthDoc,       1200, 0.80) : Promise.resolve(null),
+        files.photo ? compressImage(files.photo, 800, 0.75) : Promise.resolve(null),
+        files.signature ? compressImage(files.signature, 600, 0.80) : Promise.resolve(null),
+        files.aadharDoc ? compressImage(files.aadharDoc, 1200, 0.80) : Promise.resolve(null),
+        files.bankPassbook ? compressImage(files.bankPassbook, 1200, 0.80) : Promise.resolve(null),
+        files.tenthDoc ? compressImage(files.tenthDoc, 1200, 0.80) : Promise.resolve(null),
+        files.twelfthDoc ? compressImage(files.twelfthDoc, 1200, 0.80) : Promise.resolve(null),
         files.qualificationDoc ? compressImage(files.qualificationDoc, 1200, 0.80) : Promise.resolve(null),
-        files.additionalDoc    ? compressImage(files.additionalDoc,    1200, 0.80) : Promise.resolve(null),
+        files.additionalDoc ? compressImage(files.additionalDoc, 1200, 0.80) : Promise.resolve(null),
         payment.screenshotFile ? compressImage(payment.screenshotFile, 1000, 0.75) : Promise.resolve(null),
       ])
 
       const uploadedFiles = {
-        photo:            photoObj,
-        signature:        signatureObj,
-        aadharDoc:        aadharDocObj,
-        bankPassbook:     bankPassbookObj,
-        tenthDoc:         tenthDocObj,
-        twelfthDoc:       twelfthDocObj,
+        photo: photoObj,
+        signature: signatureObj,
+        aadharDoc: aadharDocObj,
+        bankPassbook: bankPassbookObj,
+        tenthDoc: tenthDocObj,
+        twelfthDoc: twelfthDocObj,
         qualificationDoc: qualDocObj,
-        additionalDoc:    addDocObj,
-        screenshot:       screenshotObj,
+        additionalDoc: addDocObj,
+        screenshot: screenshotObj,
       }
 
       setLoadingMsg('Submitting application...')
       const backendRes = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/verify-payment`,
         {
-          method:  'POST',
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             registrationNo,
@@ -552,14 +555,14 @@ export default function ApplyFormPage() {
             },
             paymentInfo: {
               paymentMethod,
-              utrNumber:         utr,
-              senderName:        paymentMethod === 'UPI'           ? payment.senderName        : '',
-              senderUpiId:       paymentMethod === 'UPI'           ? payment.senderUpiId       : '',
+              utrNumber: utr,
+              senderName: paymentMethod === 'UPI' ? payment.senderName : '',
+              senderUpiId: paymentMethod === 'UPI' ? payment.senderUpiId : '',
               accountHolderName: paymentMethod === 'Bank Transfer' ? payment.accountHolderName : '',
-              lastFourDigits:    paymentMethod === 'Bank Transfer' ? payment.lastFourDigits     : '',
-              paymentDate:       payment.paymentDate,
-              paymentTime:       payment.paymentTime,
-              paymentStatus:     'Under Review',
+              lastFourDigits: paymentMethod === 'Bank Transfer' ? payment.lastFourDigits : '',
+              paymentDate: payment.paymentDate,
+              paymentTime: payment.paymentTime,
+              paymentStatus: 'Under Review',
             },
             uploadedFiles,
           }),
@@ -573,21 +576,21 @@ export default function ApplyFormPage() {
         return
       }
 
-      const result   = await backendRes.json()
+      const result = await backendRes.json()
       const filename = `Application_${form.name.replace(/\s+/g, '_')}_${registrationNo}.pdf`
 
       navigate('/success', {
         state: {
-          name:          form.name,
-          post:          post.title,
-          pdfBase64:     result.pdfBase64 || null,
+          name: form.name,
+          post: post.title,
+          pdfBase64: result.pdfBase64 || null,
           filename,
-          driveLink:     result.driveLink || null,
+          driveLink: result.driveLink || null,
           registrationNo,
           paymentMethod,
           utr,
-          paymentDate:   payment.paymentDate,
-          paymentTime:   payment.paymentTime,
+          paymentDate: payment.paymentDate,
+          paymentTime: payment.paymentTime,
           paymentStatus: 'Under Review',
         },
       })
@@ -599,11 +602,11 @@ export default function ApplyFormPage() {
   }
 
   const states = [
-    'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat',
-    'Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh',
-    'Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan',
-    'Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal',
-    'Delhi','Jammu & Kashmir','Ladakh',
+    'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat',
+    'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh',
+    'Maharashtra', 'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab', 'Rajasthan',
+    'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+    'Delhi', 'Jammu & Kashmir', 'Ladakh',
   ]
 
   if (!post) return null
@@ -651,11 +654,11 @@ export default function ApplyFormPage() {
               <h3 className="text-[#1a5c2a] font-bold text-base mb-4 border-b-2 border-[#f0c020] pb-2">👤 Personal Details</h3>
               <div className="grid sm:grid-cols-2 gap-4 mb-6">
                 {[
-                  { label: "Applicant's Full Name",     name: 'name',       type: 'text', placeholder: 'Enter full name as per Aadhar' },
+                  { label: "Applicant's Full Name", name: 'name', type: 'text', placeholder: 'Enter full name as per Aadhar' },
                   { label: "Father's / Husband's Name", name: 'fatherName', type: 'text', placeholder: "Enter father's or husband's name" },
-                  { label: "Mother's Name",             name: 'motherName', type: 'text', placeholder: "Enter mother's name" },
-                  { label: 'Date of Birth',             name: 'dob',        type: 'date' },
-                  { label: 'Aadhar Card Number',        name: 'aadhar',     type: 'text', maxLength: 12, placeholder: '12-digit Aadhar number' },
+                  { label: "Mother's Name", name: 'motherName', type: 'text', placeholder: "Enter mother's name" },
+                  { label: 'Date of Birth', name: 'dob', type: 'date' },
+                  { label: 'Aadhar Card Number', name: 'aadhar', type: 'text', maxLength: 12, placeholder: '12-digit Aadhar number' },
                 ].map((f) => (
                   <div key={f.name}>
                     <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">{f.label} <span className="text-red-500">*</span></label>
@@ -704,7 +707,7 @@ export default function ApplyFormPage() {
                 <table className="w-full text-xs border-collapse">
                   <thead>
                     <tr className="bg-[#1a5c2a] text-white">
-                      {['Class','Roll/Enroll No.','College / School','Board / University','Year','Total Marks','Obtain Marks','%'].map(h => (
+                      {['Class', 'Roll/Enroll No.', 'College / School', 'Board / University', 'Year', 'Total Marks', 'Obtain Marks', '%'].map(h => (
                         <th key={h} className="px-2 py-2 text-left font-semibold whitespace-nowrap">{h}</th>
                       ))}
                     </tr>
@@ -713,7 +716,7 @@ export default function ApplyFormPage() {
                     {education.map((row, i) => (
                       <tr key={i} className={i % 2 === 0 ? 'bg-[#f0f7f0]' : 'bg-white'}>
                         <td className="px-2 py-1.5 font-semibold text-[#1a5c2a] whitespace-nowrap">{row.class}</td>
-                        {['rollEnroll','college','board','year','totalMarks','obtainMarks'].map(field => (
+                        {['rollEnroll', 'college', 'board', 'year', 'totalMarks', 'obtainMarks'].map(field => (
                           <td key={field} className="px-1 py-1">
                             <input type="text" value={row[field]}
                               onChange={(e) => handleEduChange(i, field, e.target.value)}
@@ -732,8 +735,8 @@ export default function ApplyFormPage() {
               <h3 className="text-[#1a5c2a] font-bold text-base mb-4 border-b-2 border-[#f0c020] pb-2">📞 Contact Details</h3>
               <div className="grid sm:grid-cols-2 gap-4 mb-6">
                 {[
-                  { label: 'Mobile Number (10 digits)', name: 'mobile', type: 'tel',   maxLength: 10, placeholder: '10-digit mobile number' },
-                  { label: 'Email Address',             name: 'email',  type: 'email',               placeholder: 'your@email.com'          },
+                  { label: 'Mobile Number (10 digits)', name: 'mobile', type: 'tel', maxLength: 10, placeholder: '10-digit mobile number' },
+                  { label: 'Email Address', name: 'email', type: 'email', placeholder: 'your@email.com' },
                 ].map(f => (
                   <div key={f.name}>
                     <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">{f.label} <span className="text-red-500">*</span></label>
@@ -820,10 +823,10 @@ export default function ApplyFormPage() {
               <div className="mb-4">
                 <p className="text-xs font-bold text-[#1a5c2a] uppercase tracking-wider mb-3">Required Documents</p>
                 <div className="grid sm:grid-cols-2 gap-5">
-                  <FileUpload label="Applicant Photo"  name="photo"        accept="image/jpeg,image/png,image/jpg"                  required onChange={handleFileChange} hint="JPG or PNG • Passport-size, clear face" />
-                  <FileUpload label="Signature"        name="signature"    accept="image/jpeg,image/png,image/jpg"                  required onChange={handleFileChange} hint="JPG or PNG • Sign on white paper" />
-                  <FileUpload label="Aadhar Card"      name="aadharDoc"    accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF • Both sides visible" />
-                  <FileUpload label="Bank Passbook"    name="bankPassbook" accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF • First page with account details" />
+                  <FileUpload label="Applicant Photo" name="photo" accept="image/jpeg,image/png,image/jpg" required onChange={handleFileChange} hint="JPG or PNG • Passport-size, clear face" />
+                  <FileUpload label="Signature" name="signature" accept="image/jpeg,image/png,image/jpg" required onChange={handleFileChange} hint="JPG or PNG • Sign on white paper" />
+                  <FileUpload label="Aadhar Card" name="aadharDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF • Both sides visible" />
+                  <FileUpload label="Bank Passbook" name="bankPassbook" accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF • First page with account details" />
                 </div>
               </div>
 
@@ -832,7 +835,7 @@ export default function ApplyFormPage() {
                   <p className="text-xs font-bold text-[#1a5c2a] uppercase tracking-wider mb-1">Education Documents</p>
                   <p className="text-gray-400 text-xs mb-3">Upload marksheets for classes you filled in previous step.</p>
                   <div className="grid sm:grid-cols-2 gap-5">
-                    {show10thDoc && <FileUpload label="10th Class Marksheet" name="tenthDoc"   accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF" />}
+                    {show10thDoc && <FileUpload label="10th Class Marksheet" name="tenthDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF" />}
                     {show12thDoc && <FileUpload label="12th Class Marksheet" name="twelfthDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF" />}
                   </div>
                 </div>
@@ -882,7 +885,7 @@ export default function ApplyFormPage() {
 
               {/* Payment Method Tabs */}
               <div className="flex gap-2 mb-5">
-                {['UPI', 'Bank Transfer'].map(method => (
+                {['UPI' /*, 'Bank Transfer'*/].map(method => (
                   <button key={method} onClick={() => setPaymentMethod(method)}
                     className={`flex-1 py-2.5 rounded-xl font-bold text-sm border-2 transition-all
                       ${paymentMethod === method
@@ -899,7 +902,7 @@ export default function ApplyFormPage() {
               <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3 mb-5 flex items-start gap-2">
                 <span className="text-red-500 text-base mt-0.5">⚠️</span>
                 <p className="text-red-700 text-xs leading-relaxed">
-                  <strong>Warning:</strong> Fake or duplicate UTR / Transaction ID will lead to immediate cancellation without refund.
+                  <strong>Warning:</strong> Fake or duplicate Transaction ID will lead to immediate cancellation without refund.
                 </p>
               </div>
 
@@ -918,7 +921,7 @@ export default function ApplyFormPage() {
                         placeholder="e.g. yourname@upi" className={inp} />
                     </div>
                     <div>
-                      <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">Transaction ID (UTR) <span className="text-red-500">*</span></label>
+                      <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">Transaction ID <span className="text-red-500">*</span></label>
                       <input type="text" name="transactionId" value={payment.transactionId} onChange={handlePaymentChange}
                         placeholder="e.g. T2345678901" className={inp} />
                       <p className="text-xs text-gray-400 mt-1">Copy from your UPI app → Transaction history</p>
