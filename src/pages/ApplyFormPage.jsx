@@ -718,7 +718,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 // ─── CONFIG — Change these values ────────────────────────────────────────────
 const PAYMENT_CONFIG = {
   upiId: 'ruralwelfare@upi',                  // ← Your UPI ID
-  qrCodeUrl: '/qr-code.png',                  // ← Path to your QR code image in /public
+  qrCodeUrl: '/qr-code.jpeg',                  // ← Path to your QR code image in /public
   bankName: 'State Bank of India',
   accountName: 'Rural Welfare Program',
   accountNumber: '1234567890123456',
@@ -1155,92 +1155,95 @@ const handleFinalSubmit = async () => {
     showToast('Verifying transaction ID...', 'info')
     const isDuplicate = await checkDuplicateUTR(utr)
     if (isDuplicate) {
-      showToast('⚠️ Duplicate Transaction ID detected! This UTR has already been submitted.', 'error')
+      showToast('⚠️ Duplicate Transaction ID detected!', 'error')
       setLoading(false)
       return
     }
 
-    // ── Step 2: Generate Registration Number ──
+    // ── Step 2: Registration number generate karo ──
     const registrationNo = generateRegistrationNo()
     const paymentId      = `PAY_${utr.toUpperCase()}`
 
-    // ── Step 3: Submit to Google Sheets (non-blocking) ──
+    // ── Step 3: Files ko base64 mein convert karo ──
+    showToast('Uploading documents...', 'info')
+
+    async function toBase64(file) {
+      if (!file) return null
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload  = (e) => resolve({
+          base64:       e.target.result.split(',')[1],
+          mimetype:     file.type,
+          originalName: file.name,
+        })
+        reader.onerror = reject
+        reader.readAsDataURL(file)
+      })
+    }
+
+    const uploadedFiles = {
+      photo:           await toBase64(files.photo),
+      signature:       await toBase64(files.signature),
+      aadharDoc:       await toBase64(files.aadharDoc),
+      tenthDoc:        await toBase64(files.tenthDoc),
+      twelfthDoc:      await toBase64(files.twelfthDoc),
+      graduationDoc:   await toBase64(files.graduationDoc),
+      qualificationDoc:await toBase64(files.qualificationDoc),
+      additionalDoc:   await toBase64(files.additionalDoc),
+      screenshot:      await toBase64(payment.screenshotFile),
+    }
+
+    // ── Step 4: Google Sheets submit (non-blocking) ──
     submitToSheet(registrationNo, paymentId, form, payment).catch(() => {})
 
-    // ── Step 4: Send data + files to Backend (PDF + Drive + Email) ──
+    // ── Step 5: Backend ko JSON bhejo ──
     showToast('Submitting application...', 'info')
-    let driveLink = null
-    let pdfBase64 = null
 
-    try {
-      const formDataPayload = new FormData()
-
-      // Form fields
-      formDataPayload.append('registrationNo', registrationNo)
-      formDataPayload.append('paymentId',      paymentId)
-      formDataPayload.append('postTitle',      post.title)
-      formDataPayload.append('postLevel',      post.level || '')
-      formDataPayload.append('paymentMethod',  paymentMethod)
-      formDataPayload.append('utrNumber',      utr)
-      formDataPayload.append('paymentStatus',  'Pending Verification')
-      formDataPayload.append('education',      JSON.stringify(education))
-
-      // Personal form fields
-      Object.entries(form).forEach(([key, val]) => {
-        formDataPayload.append(key, val)
-      })
-
-      // Payment fields
-      formDataPayload.append('senderUpiId',       paymentMethod === 'UPI'           ? payment.senderUpiId       : '')
-      formDataPayload.append('accountHolderName', paymentMethod === 'Bank Transfer' ? payment.accountHolderName : '')
-      formDataPayload.append('lastFourDigits',    paymentMethod === 'Bank Transfer' ? payment.lastFourDigits    : '')
-
-      // Files
-      if (files.photo)          formDataPayload.append('photo',          files.photo)
-      if (files.signature)      formDataPayload.append('signature',      files.signature)
-      if (files.aadharDoc)      formDataPayload.append('aadharDoc',      files.aadharDoc)
-      if (files.tenthDoc)       formDataPayload.append('tenthDoc',       files.tenthDoc)
-      if (files.twelfthDoc)     formDataPayload.append('twelfthDoc',     files.twelfthDoc)
-      if (files.graduationDoc)  formDataPayload.append('graduationDoc',  files.graduationDoc)
-      if (files.qualificationDoc) formDataPayload.append('qualificationDoc', files.qualificationDoc)
-      if (files.additionalDoc)  formDataPayload.append('additionalDoc',  files.additionalDoc)
-      if (payment.screenshotFile) formDataPayload.append('screenshot',   payment.screenshotFile)
-
-      const backendRes = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/verify-payment`,
-        {
-          method: 'POST',
-          body:   formDataPayload,  // FormData — Content-Type header mat lagao
-        }
-      )
-
-      if (backendRes.ok) {
-        const result = await backendRes.json()
-        driveLink = result.driveLink || null
-        pdfBase64 = result.pdfBase64 || null
-      } else {
-        console.warn('Backend call failed — status:', backendRes.status)
-        showToast('Submission failed. Please try again.', 'error')
-        setLoading(false)
-        return
+    const backendRes = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/verify-payment`,
+      {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          registrationNo,
+          paymentId,
+          formData: {
+            ...form,
+            postTitle:   post.title,
+            postLevel:   post.level || '',
+            education:   JSON.stringify(education),
+          },
+          paymentInfo: {
+            paymentMethod:     paymentMethod,
+            utrNumber:         utr,
+            senderUpiId:       paymentMethod === 'UPI'           ? payment.senderUpiId       : '',
+            accountHolderName: paymentMethod === 'Bank Transfer' ? payment.accountHolderName : '',
+            lastFourDigits:    paymentMethod === 'Bank Transfer' ? payment.lastFourDigits    : '',
+            paymentStatus:     'Pending Verification',
+          },
+          uploadedFiles,   // base64 files
+        }),
       }
+    )
 
-    } catch (err) {
-      console.error('Backend error:', err.message)
-      showToast('Server se connect nahi ho paya. Please try again.', 'error')
+    if (!backendRes.ok) {
+      const errData = await backendRes.json().catch(() => ({}))
+      showToast(errData.error || 'Submission failed. Please try again.', 'error')
       setLoading(false)
       return
     }
 
-    // ── Step 5: Navigate to Success ──
+    const result = await backendRes.json()
+
+    // ── Step 6: Success page pe navigate karo ──
     const filename = `Application_${form.name.replace(/\s+/g, '_')}_${registrationNo}.pdf`
     navigate('/success', {
       state: {
         name:          form.name,
         post:          post.title,
-        pdfBase64,
+        pdfBase64:     result.pdfBase64 || null,
         filename,
-        driveLink,
+        driveLink:     result.driveLink || null,
         registrationNo,
         paymentId,
         paymentMethod,
@@ -1254,7 +1257,6 @@ const handleFinalSubmit = async () => {
     setLoading(false)
   }
 }
-
   const states = [
     'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh', 'Goa', 'Gujarat',
     'Haryana', 'Himachal Pradesh', 'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh',
