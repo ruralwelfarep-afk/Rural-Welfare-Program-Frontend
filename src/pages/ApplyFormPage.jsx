@@ -188,9 +188,6 @@ function PaymentInfoCard({ method, feeGeneral, feeOBC, category }) {
     return (
       <div className="bg-[#f0f7f0] border border-[#4a9e5c] rounded-2xl p-4 mb-5">
         <p className="text-[#1a5c2a] font-bold text-sm mb-3">📲 Pay via UPI</p>
-        {/* <div className="flex flex-col sm:flex-row gap-5 items-start">
-          <div className="flex flex-col items-center gap-2">
-            <div className="w-28 h-28 bg-white border-2 border-[#1a5c2a] rounded-xl flex items-center justify-center overflow-hidden"> */}
         <div className="flex flex-col items-center gap-5">
           <div className="flex flex-col items-center gap-2">
             <div className="w-52 h-52 bg-white border-2 border-[#1a5c2a] rounded-xl flex items-center justify-center overflow-hidden">
@@ -210,7 +207,7 @@ function PaymentInfoCard({ method, feeGeneral, feeOBC, category }) {
             </div>
             <span className="text-xs text-gray-500">Scan QR to pay</span>
           </div>
-          <div className="flex-1 space-y-2">
+          <div className="flex-1 space-y-2 w-full">
             <div className="bg-white rounded-xl px-4 py-2.5 border border-gray-200">
               <p className="text-xs text-gray-400 mb-0.5">Receiver Name</p>
               <span className="font-bold text-[#1a5c2a] text-sm">{PAYMENT_CONFIG.accountName}</span>
@@ -265,53 +262,6 @@ function PaymentInfoCard({ method, feeGeneral, feeOBC, category }) {
     </div>
   )
 }
-
-// ─── Generate registration number ─────────────────────────────────────────────
-// function generateRegistrationNo() {
-//   return Date.now().toString().slice(-7) + Math.floor(Math.random() * 1000).toString().padStart(3, '0')
-// }
-
-// function generateRegistrationNo() {
-//   const now    = new Date()
-//   const year   = now.getFullYear()
-//   const month  = String(now.getMonth() + 1).padStart(2, '0')
-//   const random = Math.floor(Math.random() * 9000 + 1000) // 1000–9999
-//   return 'RWP' + year + month + random
-// }
-// Example: RWP2026043847
-
-async function fetchRegistrationNo() {
-  const appsScriptUrl = import.meta.env.VITE_APPS_SCRIPT_URL
-  if (!appsScriptUrl) {
-    // Fallback: VITE_APPS_SCRIPT_URL nahi hai toh local generate karo
-    console.warn('[RegNo] VITE_APPS_SCRIPT_URL not set — using local fallback')
-    return localFallbackRegNo()
-  }
-
-  try {
-    const res = await fetch(`${appsScriptUrl}?action=getNextRegNo`)
-    const data = await res.json()
-    if (data.success && data.registrationNo) {
-      console.log('[RegNo] Fetched from Apps Script:', data.registrationNo)
-      return data.registrationNo
-    }
-    console.warn('[RegNo] Apps Script returned error — using fallback:', data.error)
-    return localFallbackRegNo()
-  } catch (err) {
-    console.warn('[RegNo] Fetch failed — using fallback:', err.message)
-    return localFallbackRegNo()
-  }
-}
-
-// Fallback: agar Apps Script unreachable ho toh timestamp-based generate karo
-function localFallbackRegNo() {
-  const now = new Date()
-  const year = now.getFullYear()
-  const month = String(now.getMonth() + 1).padStart(2, '0')
-  const rand = String(Math.floor(Math.random() * 9000) + 1000)
-  return `RWP${year}${month}${rand}`
-}
-
 
 // ─── UTR Duplicate check ──────────────────────────────────────────────────────
 async function checkDuplicateUTR(utr) {
@@ -497,6 +447,7 @@ export default function ApplyFormPage() {
       : payment.referenceNumber.trim()
 
     try {
+      // ── Step 1: UTR duplicate check ──
       setLoadingMsg('Verifying transaction ID...')
       const isDuplicate = await checkDuplicateUTR(utr)
       if (isDuplicate) {
@@ -505,40 +456,37 @@ export default function ApplyFormPage() {
         return
       }
 
-      // const registrationNo = generateRegistrationNo()
-      setLoadingMsg('Generating registration number...')
-      const registrationNo = await fetchRegistrationNo()
-
+      // ── Step 2: Compress files ──
       setLoadingMsg('Compressing & uploading documents...')
       const [
         photoObj, signatureObj, aadharDocObj,
-        bankPassbookObj,
-        tenthDocObj, twelfthDocObj,
+        bankPassbookObj, tenthDocObj, twelfthDocObj,
         qualDocObj, addDocObj, screenshotObj,
       ] = await Promise.all([
-        files.photo ? compressImage(files.photo, 800, 0.75) : Promise.resolve(null),
-        files.signature ? compressImage(files.signature, 600, 0.80) : Promise.resolve(null),
-        files.aadharDoc ? compressImage(files.aadharDoc, 1200, 0.80) : Promise.resolve(null),
-        files.bankPassbook ? compressImage(files.bankPassbook, 1200, 0.80) : Promise.resolve(null),
-        files.tenthDoc ? compressImage(files.tenthDoc, 1200, 0.80) : Promise.resolve(null),
-        files.twelfthDoc ? compressImage(files.twelfthDoc, 1200, 0.80) : Promise.resolve(null),
-        files.qualificationDoc ? compressImage(files.qualificationDoc, 1200, 0.80) : Promise.resolve(null),
-        files.additionalDoc ? compressImage(files.additionalDoc, 1200, 0.80) : Promise.resolve(null),
-        payment.screenshotFile ? compressImage(payment.screenshotFile, 1000, 0.75) : Promise.resolve(null),
+        files.photo            ? compressImage(files.photo, 800, 0.75)            : Promise.resolve(null),
+        files.signature        ? compressImage(files.signature, 600, 0.80)        : Promise.resolve(null),
+        files.aadharDoc        ? compressImage(files.aadharDoc, 1200, 0.80)       : Promise.resolve(null),
+        files.bankPassbook     ? compressImage(files.bankPassbook, 1200, 0.80)    : Promise.resolve(null),
+        files.tenthDoc         ? compressImage(files.tenthDoc, 1200, 0.80)        : Promise.resolve(null),
+        files.twelfthDoc       ? compressImage(files.twelfthDoc, 1200, 0.80)      : Promise.resolve(null),
+        files.qualificationDoc ? compressImage(files.qualificationDoc, 1200, 0.80): Promise.resolve(null),
+        files.additionalDoc    ? compressImage(files.additionalDoc, 1200, 0.80)   : Promise.resolve(null),
+        payment.screenshotFile ? compressImage(payment.screenshotFile, 1000, 0.75): Promise.resolve(null),
       ])
 
       const uploadedFiles = {
-        photo: photoObj,
-        signature: signatureObj,
-        aadharDoc: aadharDocObj,
-        bankPassbook: bankPassbookObj,
-        tenthDoc: tenthDocObj,
-        twelfthDoc: twelfthDocObj,
+        photo:            photoObj,
+        signature:        signatureObj,
+        aadharDoc:        aadharDocObj,
+        bankPassbook:     bankPassbookObj,
+        tenthDoc:         tenthDocObj,
+        twelfthDoc:       twelfthDocObj,
         qualificationDoc: qualDocObj,
-        additionalDoc: addDocObj,
-        screenshot: screenshotObj,
+        additionalDoc:    addDocObj,
+        screenshot:       screenshotObj,
       }
 
+      // ── Step 3: Backend call — registrationNo mat bhejo, backend generate karega ──
       setLoadingMsg('Submitting application...')
       const backendRes = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/verify-payment`,
@@ -546,7 +494,7 @@ export default function ApplyFormPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            registrationNo,
+            // ✅ registrationNo nahi bhejte — backend khud generate karega
             formData: {
               ...form,
               postTitle: post.title,
@@ -556,12 +504,12 @@ export default function ApplyFormPage() {
             paymentInfo: {
               paymentMethod,
               utrNumber: utr,
-              senderName: paymentMethod === 'UPI' ? payment.senderName : '',
-              senderUpiId: paymentMethod === 'UPI' ? payment.senderUpiId : '',
+              senderName:        paymentMethod === 'UPI'           ? payment.senderName        : '',
+              senderUpiId:       paymentMethod === 'UPI'           ? payment.senderUpiId       : '',
               accountHolderName: paymentMethod === 'Bank Transfer' ? payment.accountHolderName : '',
-              lastFourDigits: paymentMethod === 'Bank Transfer' ? payment.lastFourDigits : '',
-              paymentDate: payment.paymentDate,
-              paymentTime: payment.paymentTime,
+              lastFourDigits:    paymentMethod === 'Bank Transfer' ? payment.lastFourDigits    : '',
+              paymentDate:  payment.paymentDate,
+              paymentTime:  payment.paymentTime,
               paymentStatus: 'Under Review',
             },
             uploadedFiles,
@@ -576,21 +524,30 @@ export default function ApplyFormPage() {
         return
       }
 
+      // ── Step 4: Backend se registrationNo lo ──
       const result = await backendRes.json()
+      const registrationNo = result.registrationNo
+
+      if (!registrationNo) {
+        showToast('Registration number generate nahi hua. Please try again.', 'error')
+        setLoading(false)
+        return
+      }
+
       const filename = `Application_${form.name.replace(/\s+/g, '_')}_${registrationNo}.pdf`
 
       navigate('/success', {
         state: {
-          name: form.name,
-          post: post.title,
-          pdfBase64: result.pdfBase64 || null,
+          name:          form.name,
+          post:          post.title,
+          pdfBase64:     result.pdfBase64 || null,
           filename,
-          driveLink: result.driveLink || null,
+          driveLink:     result.driveLink || null,
           registrationNo,
           paymentMethod,
           utr,
-          paymentDate: payment.paymentDate,
-          paymentTime: payment.paymentTime,
+          paymentDate:   payment.paymentDate,
+          paymentTime:   payment.paymentTime,
           paymentStatus: 'Under Review',
         },
       })
@@ -654,11 +611,11 @@ export default function ApplyFormPage() {
               <h3 className="text-[#1a5c2a] font-bold text-base mb-4 border-b-2 border-[#f0c020] pb-2">👤 Personal Details</h3>
               <div className="grid sm:grid-cols-2 gap-4 mb-6">
                 {[
-                  { label: "Applicant's Full Name", name: 'name', type: 'text', placeholder: 'Enter full name as per Aadhar' },
-                  { label: "Father's / Husband's Name", name: 'fatherName', type: 'text', placeholder: "Enter father's or husband's name" },
-                  { label: "Mother's Name", name: 'motherName', type: 'text', placeholder: "Enter mother's name" },
-                  { label: 'Date of Birth', name: 'dob', type: 'date' },
-                  { label: 'Aadhar Card Number', name: 'aadhar', type: 'text', maxLength: 12, placeholder: '12-digit Aadhar number' },
+                  { label: "Applicant's Full Name",      name: 'name',       type: 'text', placeholder: 'Enter full name as per Aadhar' },
+                  { label: "Father's / Husband's Name",  name: 'fatherName', type: 'text', placeholder: "Enter father's or husband's name" },
+                  { label: "Mother's Name",              name: 'motherName', type: 'text', placeholder: "Enter mother's name" },
+                  { label: 'Date of Birth',              name: 'dob',        type: 'date' },
+                  { label: 'Aadhar Card Number',         name: 'aadhar',     type: 'text', maxLength: 12, placeholder: '12-digit Aadhar number' },
                 ].map((f) => (
                   <div key={f.name}>
                     <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">{f.label} <span className="text-red-500">*</span></label>
@@ -735,8 +692,8 @@ export default function ApplyFormPage() {
               <h3 className="text-[#1a5c2a] font-bold text-base mb-4 border-b-2 border-[#f0c020] pb-2">📞 Contact Details</h3>
               <div className="grid sm:grid-cols-2 gap-4 mb-6">
                 {[
-                  { label: 'Mobile Number (10 digits)', name: 'mobile', type: 'tel', maxLength: 10, placeholder: '10-digit mobile number' },
-                  { label: 'Email Address', name: 'email', type: 'email', placeholder: 'your@email.com' },
+                  { label: 'Mobile Number (10 digits)', name: 'mobile', type: 'tel',   maxLength: 10, placeholder: '10-digit mobile number' },
+                  { label: 'Email Address',             name: 'email',  type: 'email',               placeholder: 'your@email.com' },
                 ].map(f => (
                   <div key={f.name}>
                     <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">{f.label} <span className="text-red-500">*</span></label>
@@ -789,15 +746,9 @@ export default function ApplyFormPage() {
                 </div>
                 <div>
                   <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">IFSC Code <span className="text-red-500">*</span></label>
-                  <input
-                    type="text"
-                    name="bankIfsc"
-                    required
-                    value={form.bankIfsc}
+                  <input type="text" name="bankIfsc" required value={form.bankIfsc}
                     onChange={(e) => setForm(p => ({ ...p, bankIfsc: e.target.value.toUpperCase() }))}
-                    placeholder="e.g. SBIN0001234"
-                    className={inp}
-                  />
+                    placeholder="e.g. SBIN0001234" className={inp} />
                   <p className="text-xs text-gray-400 mt-1">11-character code on your cheque / passbook</p>
                 </div>
                 <div>
@@ -823,10 +774,10 @@ export default function ApplyFormPage() {
               <div className="mb-4">
                 <p className="text-xs font-bold text-[#1a5c2a] uppercase tracking-wider mb-3">Required Documents</p>
                 <div className="grid sm:grid-cols-2 gap-5">
-                  <FileUpload label="Applicant Photo" name="photo" accept="image/jpeg,image/png,image/jpg" required onChange={handleFileChange} hint="JPG or PNG • Passport-size, clear face" />
-                  <FileUpload label="Signature" name="signature" accept="image/jpeg,image/png,image/jpg" required onChange={handleFileChange} hint="JPG or PNG • Sign on white paper" />
-                  <FileUpload label="Aadhar Card" name="aadharDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF • Both sides visible" />
-                  <FileUpload label="Bank Passbook" name="bankPassbook" accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF • First page with account details" />
+                  <FileUpload label="Applicant Photo"  name="photo"      accept="image/jpeg,image/png,image/jpg"                    required onChange={handleFileChange} hint="JPG or PNG • Passport-size, clear face" />
+                  <FileUpload label="Signature"        name="signature"  accept="image/jpeg,image/png,image/jpg"                    required onChange={handleFileChange} hint="JPG or PNG • Sign on white paper" />
+                  <FileUpload label="Aadhar Card"      name="aadharDoc"  accept="image/jpeg,image/png,image/jpg,application/pdf"    required onChange={handleFileChange} hint="JPG, PNG or PDF • Both sides visible" />
+                  <FileUpload label="Bank Passbook"    name="bankPassbook" accept="image/jpeg,image/png,image/jpg,application/pdf"  required onChange={handleFileChange} hint="JPG, PNG or PDF • First page with account details" />
                 </div>
               </div>
 
@@ -835,7 +786,7 @@ export default function ApplyFormPage() {
                   <p className="text-xs font-bold text-[#1a5c2a] uppercase tracking-wider mb-1">Education Documents</p>
                   <p className="text-gray-400 text-xs mb-3">Upload marksheets for classes you filled in previous step.</p>
                   <div className="grid sm:grid-cols-2 gap-5">
-                    {show10thDoc && <FileUpload label="10th Class Marksheet" name="tenthDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF" />}
+                    {show10thDoc && <FileUpload label="10th Class Marksheet" name="tenthDoc"   accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF" />}
                     {show12thDoc && <FileUpload label="12th Class Marksheet" name="twelfthDoc" accept="image/jpeg,image/png,image/jpg,application/pdf" required onChange={handleFileChange} hint="JPG, PNG or PDF" />}
                   </div>
                 </div>
@@ -885,13 +836,13 @@ export default function ApplyFormPage() {
 
               {/* Payment Method Tabs */}
               <div className="flex gap-2 mb-5">
-                {['UPI' /*, 'Bank Transfer'*/].map(method => (
+                {['UPI'].map(method => (
                   <button key={method} onClick={() => setPaymentMethod(method)}
                     className={`flex-1 py-2.5 rounded-xl font-bold text-sm border-2 transition-all
                       ${paymentMethod === method
                         ? 'bg-[#1a5c2a] border-[#1a5c2a] text-white shadow-md'
                         : 'bg-white border-gray-200 text-gray-500 hover:border-[#1a5c2a]'}`}>
-                    {method === 'UPI' ? '📲 UPI' : '🏦 Bank Transfer'}
+                    📲 UPI
                   </button>
                 ))}
               </div>
@@ -908,58 +859,34 @@ export default function ApplyFormPage() {
 
               {/* Dynamic Fields */}
               <div className="grid sm:grid-cols-2 gap-4 mb-5">
-                {paymentMethod === 'UPI' ? (
-                  <>
-                    <div className="sm:col-span-2">
-                      <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">Sender Name <span className="text-red-500">*</span></label>
-                      <input type="text" name="senderName" value={payment.senderName} onChange={handlePaymentChange}
-                        placeholder="Name shown in your UPI app" className={inp} />
-                    </div>
-                    <div>
-                      <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">Sender UPI ID <span className="text-red-500">*</span></label>
-                      <input type="text" name="senderUpiId" value={payment.senderUpiId} onChange={handlePaymentChange}
-                        placeholder="e.g. yourname@upi" className={inp} />
-                    </div>
-                    <div>
-                      <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">Transaction ID <span className="text-red-500">*</span></label>
-                      <input type="text" name="transactionId" value={payment.transactionId} onChange={handlePaymentChange}
-                        placeholder="e.g. T2345678901" className={inp} />
-                      <p className="text-xs text-gray-400 mt-1">Copy from your UPI app → Transaction history</p>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div>
-                      <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">Account Holder Name <span className="text-red-500">*</span></label>
-                      <input type="text" name="accountHolderName" value={payment.accountHolderName} onChange={handlePaymentChange}
-                        placeholder="Name on bank account" className={inp} />
-                    </div>
-                    <div>
-                      <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">Last 4 Digits of Account No. <span className="text-red-500">*</span></label>
-                      <input type="text" name="lastFourDigits" value={payment.lastFourDigits} onChange={handlePaymentChange}
-                        maxLength={4} placeholder="e.g. 4567" className={inp} />
-                    </div>
-                    <div className="sm:col-span-2">
-                      <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">UTR / Reference Number <span className="text-red-500">*</span></label>
-                      <input type="text" name="referenceNumber" value={payment.referenceNumber} onChange={handlePaymentChange}
-                        placeholder="e.g. SBIN12345678901" className={inp} />
-                      <p className="text-xs text-gray-400 mt-1">Bank app → Transaction details → UTR / Reference Number</p>
-                    </div>
-                  </>
-                )}
+                <div className="sm:col-span-2">
+                  <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">Sender Name <span className="text-red-500">*</span></label>
+                  <input type="text" name="senderName" value={payment.senderName} onChange={handlePaymentChange}
+                    placeholder="Name shown in your UPI app" className={inp} />
+                </div>
+                <div>
+                  <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">Sender UPI ID <span className="text-red-500">*</span></label>
+                  <input type="text" name="senderUpiId" value={payment.senderUpiId} onChange={handlePaymentChange}
+                    placeholder="e.g. yourname@upi" className={inp} />
+                </div>
+                <div>
+                  <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">Transaction ID <span className="text-red-500">*</span></label>
+                  <input type="text" name="transactionId" value={payment.transactionId} onChange={handlePaymentChange}
+                    placeholder="e.g. T2345678901" className={inp} />
+                  <p className="text-xs text-gray-400 mt-1">Copy from your UPI app → Transaction history</p>
+                </div>
 
-                {/* Payment Date & Time */}
                 <div>
                   <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">Payment Date <span className="text-red-500">*</span></label>
                   <input type="date" name="paymentDate" value={payment.paymentDate} onChange={handlePaymentChange}
                     max={new Date().toISOString().split('T')[0]} className={inp} />
-                  <p className="text-xs text-gray-400 mt-1">Date shown in your UPI / bank app</p>
+                  <p className="text-xs text-gray-400 mt-1">Date shown in your UPI app</p>
                 </div>
 
                 <div>
                   <label className="block text-[#1a5c2a] font-semibold text-xs mb-1.5">Payment Time <span className="text-red-500">*</span></label>
                   <input type="time" name="paymentTime" value={payment.paymentTime} onChange={handlePaymentChange} className={inp} />
-                  <p className="text-xs text-gray-400 mt-1">Time shown in your UPI / bank app</p>
+                  <p className="text-xs text-gray-400 mt-1">Time shown in your UPI app</p>
                 </div>
 
                 {/* Screenshot Upload */}
