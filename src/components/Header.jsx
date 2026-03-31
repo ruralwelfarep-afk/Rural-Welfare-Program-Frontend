@@ -36,9 +36,9 @@ export default function Header() {
               <p className="text-[#4a9e5c] text-[10px] sm:text-xs font-medium tracking-widest uppercase hidden sm:block">
                 ग्रामीण जनकल्याण कार्यक्रम
               </p>
-              <p className="text-[#c4956a] text-[9px] sm:text-[10px] hidden sm:block">
+              {/* <p className="text-[#c4956a] text-[9px] sm:text-[10px] hidden sm:block">
                 In collaboration with UNDP
-              </p>
+              </p> */}
             </div>
           </Link>
 

@@ -151,13 +151,13 @@ export default function ContactPage() {
     {
       icon: '📍',
       title: 'Our Address',
-      lines: ['Jan Seva Kendra (CSC)', 'Rural Welfare Program HQ', 'New Delhi, India'],
+      lines: ['Noida Authority, Administrative Complex, Sector-6, Noida-20130'],
     },
-    // {
-    //   icon: '📞',
-    //   title: 'Phone',
-    //   lines: ['+91 98765 43210', '+91 11 2345 6789'],
-    // },
+    {
+      icon: '📞',
+      title: 'Phone',
+      lines: ['+91 788 062 1013'],
+    },
     {
       icon: '✉️',
       title: 'Email',
