@@ -4,27 +4,27 @@
 import { useNavigate } from 'react-router-dom'
 
 export const posts = [
-  {
+   {
     id: 1,
-    title: 'Assistant Health Worker',
-    level: 'Post 1',
-    ageLimit: '18 – 50 Years',
-    feeGeneral: '₹1,100', 
-    feeOBC: '₹1,000',
-    feeAmount: { General: 110000, OBC: 100000, SC: 100000, ST: 100000, EWS: 100000 },
-    eligibility: ['10th Pass or above', 'Rural area women', 'Interest in social work'],
-    
-  },
-  {
-    id: 2,
     title: 'Health Worker',
-    level: 'Post 2',
+    level: 'Post 1  ',
     ageLimit: '18 – 50 Years',
     feeGeneral: '₹1,100',
     feeOBC: '₹1,000',
     feeAmount: { General: 110000, OBC: 100000, SC: 100000, ST: 100000, EWS: 100000 },
     eligibility: ['12th Pass or above', 'Rural area women', 'Dedication to service'],
   },
+  {
+    id: 2,
+    title: 'Assistant Health Worker',
+    level: 'Post 2',
+    ageLimit: '18 – 50 Years',
+    feeGeneral: '₹1,100', 
+    feeOBC: '₹1,000',
+    feeAmount: { General: 110000, OBC: 100000, SC: 100000, ST: 100000, EWS: 100000 },
+    eligibility: ['10th Pass or above', 'Rural area women', 'Interest in social work'],
+  },
+ 
 ]
 
 export default function Registration() {
