@@ -12,7 +12,8 @@ export const posts = [
     feeGeneral: '₹1,100', 
     feeOBC: '₹1,000',
     feeAmount: { General: 110000, OBC: 100000, SC: 100000, ST: 100000, EWS: 100000 },
-    eligibility: ['12th Pass or above', 'Rural area women', 'Dedication to service'],
+    eligibility: ['10th Pass or above', 'Rural area women', 'Interest in social work'],
+    
   },
   {
     id: 2,
@@ -22,7 +23,7 @@ export const posts = [
     feeGeneral: '₹1,100',
     feeOBC: '₹1,000',
     feeAmount: { General: 110000, OBC: 100000, SC: 100000, ST: 100000, EWS: 100000 },
-    eligibility: ['10th Pass or above', 'Rural area women', 'Interest in social work'],
+    eligibility: ['12th Pass or above', 'Rural area women', 'Dedication to service'],
   },
 ]
 

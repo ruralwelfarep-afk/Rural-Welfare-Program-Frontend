@@ -37,13 +37,13 @@ const posts = [
     id: 1,
     title: 'Assistant Health Worker',
     level: 'Post 1',
-    eligibility: ['12th Pass or above', 'Rural area women', 'Dedication to service'],
+    eligibility: ['10th Pass or above', 'Rural area women', 'Interest in social work'],
   },
   {
     id: 2,
     title: 'Health Worker',
     level: 'Post 2',
-    eligibility: ['10th Pass or above', 'Rural area women', 'Interest in social work'],
+    eligibility: ['12th Pass or above', 'Rural area women', 'Dedication to service'],
   },
 ]
 
